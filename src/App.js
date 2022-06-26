@@ -1,24 +1,40 @@
-import logo from './logo.svg';
+import Header from './components/Header';
+import Dashboard from './components/Dashboard';
+import Card from './components/Card';
+import { Routes, Route, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
+import EditePosts from './components/EditePosts';
 
 function App() {
+  const DahboardComp = (
+    <>
+      <Header />
+      <Dashboard />
+    </>
+  );
+  const Cards = (
+    <>
+      <Header />
+      <Card />
+    </>
+  );
+  const EditePost = (
+    <>
+      <Header />
+      <EditePosts />
+    </>
+  );
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <Routes>
+          {/* <Route path="/cards" element={Cards} /> */}
+          <Route path="/cards/:id" element={EditePost} />
+          <Route path="/" element={DahboardComp} />
+          <Route path="*" element={<h1>Page not found</h1>} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
