@@ -4,35 +4,72 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { useNavigate } from 'react-router-dom';
-
-export default function BasicCard({ posts, handleDelete }) {
-  let navigate = useNavigate();
-  //   let { title, body, id } = posts;
-
+import { Box } from '@mui/material';
+function BasicCard({ posts, handleDelete, index, onCardClick, setOpen }) {
+  //short text function
+  const shortText = (val, range) => {
+    return val.length < range ? val : val.substring(0, range) + '...';
+  };
+  const handleClick = (i) => {
+    onCardClick(posts);
+    setOpen(true);
+  };
   return (
-    <Card sx={{ minWidth: 275, minHeight: 275 }}>
-      <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Title: {posts?.title}
-        </Typography>
-        {/* <Typography variant="h5" component="div">
-          be{bull}nev{bull}o{bull}lent
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          adjective
-        </Typography> */}
-        <Typography variant="body2">
-          Body: {posts?.body}
-          <br />
-        </Typography>
+    <Card
+      sx={{
+        minWidth: 275,
+        minHeight: 275,
+        position: 'relative',
+        objectFit: 'cover',
+        boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)',
+        transition: '0.3s',
+        '&:hover': { boxShadow: ' 0 8px 16px 0 rgba(0,0,0,0.2)' },
+      }}
+    >
+      <CardContent sx={{ p: 0 }}>
+        <Box
+          component="img"
+          src={posts?.urls?.small}
+          alt={posts?.description || 'No info'}
+          sx={{
+            height: 150,
+            width: '100%',
+            padding: 0,
+            margin: 0,
+            objectFit: 'cover',
+          }}
+        />
+        <Box sx={{ p: 1 }}>
+          <Typography
+            sx={{ fontSize: 14 }}
+            variant="title"
+            color="text.secondary"
+            gutterBottom
+          >
+            Title:{' '}
+            {posts?.description
+              ? shortText(posts?.description, 30)
+              : 'No Title'}
+          </Typography>
+
+          <Typography variant="body2">
+            Description:{' '}
+            {posts?.alt_description
+              ? shortText(posts?.alt_description, 55)
+              : 'No Description'}
+            <br />
+          </Typography>
+        </Box>
       </CardContent>
-      <CardActions sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => navigate(`/cards/${posts?.id}`)}
-        >
+      <CardActions
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          position: 'absolute',
+          bottom: 0,
+        }}
+      >
+        <Button size="small" variant="outlined" onClick={handleClick}>
           Edite
         </Button>
         <Button
@@ -44,7 +81,7 @@ export default function BasicCard({ posts, handleDelete }) {
             borderColor: 'red',
             '&:hover': { borderColor: 'red' },
           }}
-          onClick={() => handleDelete(`${posts?.id}`)}
+          onClick={() => handleDelete(`${index}`)}
         >
           Delete
         </Button>
@@ -52,3 +89,4 @@ export default function BasicCard({ posts, handleDelete }) {
     </Card>
   );
 }
+export default React.memo(BasicCard);

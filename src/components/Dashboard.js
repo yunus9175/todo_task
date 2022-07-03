@@ -1,119 +1,84 @@
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, TextField, Box } from '@mui/material';
 import { Container } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getAccountInfo } from '../redux/action/userPots.action';
+import {
+  getAccountInfo,
+  getSeacrchData,
+} from '../redux/action/userPots.action';
 import Card from './Card';
+import Dialog from './Dialog';
 const Dashboard = () => {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [open, setOpen] = useState(false);
+  const [post, setPost] = useState(null);
+  const [query, setQuery] = useState('');
   useEffect(() => {
     getAccountInfo();
   }, []);
   const searchingText = useSelector((state) => state.userPosts.posts);
   const dispatch = useDispatch();
   // console.log('searchingText ', searchingText);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    fetch('https://jsonplaceholder.typicode.com/posts', {
-      method: 'POST',
-      body: JSON.stringify({
-        title,
-        body,
-      }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => console.log('created data', json));
-    setTitle('');
-    setBody('');
-  };
+
   const handleDelete = (id) => {
-    fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-      method: 'DELETE',
+    console.log('splice ', searchingText.splice(id, 1));
+
+    dispatch({
+      type: 'DELETE_POST',
+      payload: id,
     });
-    // debugger;
-    let deletedArr = [...searchingText];
-    // deletedArr = deletedArr.filter((item) => !item.id === id);
-    // let findind = deletedArr.findIndex((val) => val.id === id);
-    console.log(
-      'deletedArr ',
-      deletedArr.filter((f) => f.id !== id)
-    );
-    dispatch({ type: 'STORE_POSTS', payload: deletedArr });
+  };
+  const handleSearch = (e) => {
+    setQuery(e.target.value);
+  };
+  const handleSearchButton = () => {
+    getSeacrchData(query);
+    setQuery('');
+  };
+  const enterKey = (e) => {
+    if (e.keyCode === 13 && query) handleSearchButton();
+  };
+  const cardHandler = (val) => {
+    setPost(val);
   };
   return (
     <>
-      <h1>Welcome to dashboard</h1>
-      <Container>
-        <Grid
-          item
-          sm={3}
-          sx={{
-            margin: 'auto',
-            border: '1px solid gray',
-            borderRadius: 12,
-            padding: 5,
-            mb: 3,
-          }}
-        >
-          <Typography variant="h4" component="h2" p={2}>
-            Create new post:
-          </Typography>
-          <div>
-            <form
-              style={{ display: 'flex', flexDirection: 'column' }}
-              onSubmit={handleSubmit}
-            >
-              <label>Title</label>
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter Title"
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                style={{
-                  // width: '30%',
-                  padding: '10px 5px',
-                  borderRadius: 20,
-                  marginTop: 5,
-                }}
-              />
-              <label>Body</label>
-              <input
-                type="text"
-                name="body"
-                id="body"
-                placeholder="Enter Body"
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                style={{
-                  // width: '30%',
-                  padding: '10px 5px',
-                  borderRadius: 20,
-                  marginTop: 5,
-                }}
-              />
-              <Button
-                variant="contained"
-                type="submit"
-                sx={{ mt: 1, borderRadius: 20 }}
-              >
-                Create Post
-              </Button>
-            </form>
-          </div>
-        </Grid>
+      <Dialog open={open} setOpen={setOpen} post={post} />
+      <Container sx={{ mb: 3 }}>
+        <h1>Welcome to dashboard</h1>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <TextField
+            type="search"
+            label="Search"
+            fullWidth
+            sx={{ mb: 4, mt: 2 }}
+            value={query}
+            onChange={(e) => handleSearch(e)}
+            onKeyDown={(e) => enterKey(e)}
+          />
+          <Button
+            size="large"
+            variant="contained"
+            color="primary"
+            sx={{ ml: 2, mb: 2 }}
+            onClick={handleSearchButton}
+          >
+            Search
+          </Button>
+        </Box>
         <Grid container spacing={5}>
-          {searchingText &&
-            searchingText.map((data) => (
-              <Grid item sm={3} key={data.id}>
-                <Card posts={data} handleDelete={handleDelete} />
-              </Grid>
-            ))}
+          {!searchingText && <h1>Loading...</h1>}
+          {searchingText?.map((data, i) => (
+            <Grid item sm={4} xs={12} md={3} lg={3} key={data.id}>
+              <Card
+                key={data.id}
+                posts={data}
+                handleDelete={handleDelete}
+                index={i}
+                onCardClick={(val) => cardHandler(val)}
+                setOpen={setOpen}
+              />
+            </Grid>
+          ))}
         </Grid>
       </Container>
     </>

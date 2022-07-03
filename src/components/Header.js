@@ -69,14 +69,14 @@ export default function SearchAppBar() {
             variant="h6"
             noWrap
             component="div"
-            onClick={() => window.location.replace('/')}
+            // onClick={() => window.location.replace('/')}
             sx={{
               flexGrow: 1,
               display: { xs: 'none', sm: 'block' },
               cursor: 'pointer',
             }}
           >
-            MUI
+            Photo Gallery
           </Typography>
           <Search>
             <SearchIconWrapper>

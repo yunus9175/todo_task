@@ -1,6 +1,10 @@
 // import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from './reducer';
-import { createStore, applyMiddleware, compose } from 'redux';
+import {
+  legacy_createStore as createStore,
+  applyMiddleware,
+  compose,
+} from 'redux';
 import thunkMiddleware from 'redux-thunk';
 
 // export const store = configureStore({ reducer: rootReducer });
